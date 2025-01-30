@@ -10,10 +10,10 @@ const userSchema = new mongoose_1.default.Schema({
     password: { type: String, required: true },
 });
 const contentSchema = new mongoose_1.default.Schema({
-    link: { type: String, required: true },
-    title: { type: String, required: true },
-    tags: { type: [], required: true },
-    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User' }
+    link: { type: String },
+    title: { type: String },
+    tags: [{ type: mongoose_1.default.Types.ObjectId, ref: "Tag" }],
+    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'user', required: true }
 });
 exports.userModal = mongoose_1.default.model('user', userSchema);
 exports.contentModel = mongoose_1.default.model('content', contentSchema);

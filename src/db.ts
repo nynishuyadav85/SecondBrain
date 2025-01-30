@@ -6,10 +6,10 @@ const userSchema = new mongoose.Schema({
 })
 
 const contentSchema = new mongoose.Schema({
-    link: {type: String, required: true},
-    title: {type: String, required: true},
-    tags: {type: [], required: true},
-    userId: {type: mongoose.Types.ObjectId, ref: 'User'}
+    link: {type: String},
+    title: {type: String},
+    tags: [{type: mongoose.Types.ObjectId, ref: "Tag"}],
+    userId: {type: mongoose.Types.ObjectId, ref: 'user', required: true}
 })
 
 
