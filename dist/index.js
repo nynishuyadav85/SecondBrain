@@ -18,6 +18,7 @@ const db_1 = require("./db");
 const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
+const utils_1 = require("./utils");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield mongoose_1.default.connect('mongodb+srv://nynishuyadav85:nishant15@cluster0.zkjov.mongodb.net/secondbrain');
@@ -74,10 +75,10 @@ app.post('/api/v1/signin', function (req, res) {
 });
 app.post('/api/v1/content', middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
-    const type = req.body.type;
+    const title = req.body.type;
     yield db_1.contentModel.create({
         link,
-        type,
+        title,
         //@ts-ignore
         userId: req.userId,
         tags: []
@@ -94,6 +95,36 @@ app.get('/api/v1/content', middleware_1.userMiddleware, (req, res) => __awaiter(
     }).populate('userId', 'username');
     res.json({
         content
+    });
+}));
+app.delete('/api/v1/content', middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentId = req.body.contentId;
+    yield db_1.contentModel.deleteMany({
+        contentId: contentId,
+        //@ts-ignore
+        userId: req.userId
+    });
+    res.json({
+        message: "Deleted"
+    });
+}));
+app.post('/api/v1/share', middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const share = req.body.share;
+    if (share) {
+        yield db_1.linkModel.create({
+            //@ts-ignore
+            userId: req.userId,
+            hash: (0, utils_1.Random)(10)
+        });
+    }
+    else {
+        yield db_1.linkModel.deleteOne({
+            // @ts-ignore
+            userId: req.userId,
+        });
+    }
+    res.json({
+        message: "Updated Sharable link"
     });
 }));
 app.listen(3000);

@@ -1,10 +1,11 @@
 import express from "express"
 import  jwt  from "jsonwebtoken";
 import { z } from "zod";
-import {contentModel, userModal} from './db'
+import {contentModel, linkModel, userModal} from './db'
 import mongoose from "mongoose";
 import { JWT_KEY } from "./config";
 import { userMiddleware } from "./middleware";
+import { Random } from "./utils";
 async function main() {
     await mongoose.connect('mongodb+srv://nynishuyadav85:nishant15@cluster0.zkjov.mongodb.net/secondbrain')
 }
@@ -62,11 +63,11 @@ app.post('/api/v1/signin', async function(req, res){
 
 app.post('/api/v1/content', userMiddleware, async(req, res)=> {
     const link = req.body.link;
-    const type = req.body.type;
+    const title = req.body.type;
 
     await contentModel.create({
         link,
-        type,
+        title,
         //@ts-ignore
         userId: req.userId,
         tags: []
@@ -102,6 +103,27 @@ app.delete('/api/v1/content', userMiddleware, async(req, res) => {
     })
 })
 
+app.post('/api/v1/share', userMiddleware, async(req, res) => {
+    const share = req.body.share;
+
+    if(share){
+       await linkModel.create({
+             //@ts-ignore
+            userId: req.userId,
+            hash: Random(10)
+
+        })
+    } else {
+       await linkModel.deleteOne({
+            // @ts-ignore
+            userId: req.userId,
+        })
+    }
+
+    res.json({
+        message: "Updated Sharable link"
+    })
+})
 
 
 
