@@ -111,10 +111,24 @@ app.delete('/api/v1/content', middleware_1.userMiddleware, (req, res) => __await
 app.post('/api/v1/share', middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const share = req.body.share;
     if (share) {
+        const existingLink = yield db_1.linkModel.findOne({
+            //@ts-ignore
+            userId: req.userId
+        });
+        if (existingLink) {
+            res.json({
+                message: existingLink.hash
+            });
+            return;
+        }
+        const hash = (0, utils_1.Random)(10);
         yield db_1.linkModel.create({
             //@ts-ignore
             userId: req.userId,
-            hash: (0, utils_1.Random)(10)
+            hash: hash
+        });
+        res.json({
+            message: hash
         });
     }
     else {
@@ -122,9 +136,38 @@ app.post('/api/v1/share', middleware_1.userMiddleware, (req, res) => __awaiter(v
             // @ts-ignore
             userId: req.userId,
         });
+        res.json({
+            message: "Removed Link"
+        });
+    }
+}));
+app.get('/api/v1/brain/:shareLink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.shareLink;
+    const link = yield db_1.linkModel.findOne({
+        hash,
+    });
+    if (!link) {
+        res.status(411).json({
+            message: "Sorry incorrect Input"
+        });
+        return;
+    }
+    const content = yield db_1.contentModel.find({
+        userId: link.userId
+    });
+    const user = yield db_1.userModal.findOne({
+        _id: link.userId
+    });
+    if (!user) {
+        res.status(411).json({
+            message: "User not found , this should iddealy not happen"
+        });
+        return;
     }
     res.json({
-        message: "Updated Sharable link"
+        //@ts-ignore
+        username: user === null || user === void 0 ? void 0 : user.username,
+        content: content
     });
 }));
 app.listen(3000);
