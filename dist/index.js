@@ -19,6 +19,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
 const utils_1 = require("./utils");
+const cors_1 = __importDefault(require("cors"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield mongoose_1.default.connect('mongodb+srv://nynishuyadav85:nishant15@cluster0.zkjov.mongodb.net/secondbrain');
@@ -27,6 +28,7 @@ function main() {
 main();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.use((0, cors_1.default)());
 app.post('/api/v1/signup', function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const username = req.body.username;

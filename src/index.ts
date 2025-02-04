@@ -6,12 +6,14 @@ import mongoose from "mongoose";
 import { JWT_KEY } from "./config";
 import { userMiddleware } from "./middleware";
 import { Random } from "./utils";
+import cors from 'cors'
 async function main() {
     await mongoose.connect('mongodb+srv://nynishuyadav85:nishant15@cluster0.zkjov.mongodb.net/secondbrain')
 }
 main()
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 app.post('/api/v1/signup', async function (req, res) {
@@ -63,11 +65,12 @@ app.post('/api/v1/signin', async function(req, res){
 
 app.post('/api/v1/content', userMiddleware, async(req, res)=> {
     const link = req.body.link;
-    const title = req.body.type;
+    const type = req.body.type;
 
     await contentModel.create({
         link,
-        title,
+        type,
+        title: req.body.title,
         //@ts-ignore
         userId: req.userId,
         tags: []
